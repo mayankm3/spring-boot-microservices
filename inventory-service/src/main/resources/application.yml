@@ -1,0 +1,58 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: inventory-service
+  datasource:
+    url: "jdbc:mysql://localhost:3307/inventory_service"
+    username: inventory_service_user
+    password: mysql
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+#On first run, ddl-auto: update and on subsequent runs, ddl-auto: create-drop. In production never do: create-drop, we do: none.
+
+eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: "http://eureka:password@localhost:8761/eureka"
+  instance:
+    instance-id: "${spring.application.name}:${instanceId:${random.value}}"
+
+#Zipkin
+management:
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+#docker run -d -p 3307:3306 --name mysql2 -e MYSQL_ROOT_PASSWORD=dummypassword -e MYSQL_USER=inventory_service_user -e MYSQL_PASSWORD=mysql -e MYSQL_DATABASE=inventory_service mysql:8-oracle
+
+#Inside docker container terminal you can execute commands like:
+#mysql -u root -p
+#CREATE USER 'inventory_service_user'@'localhost' IDENTIFIED BY 'mysql';
+#SELECT user,host FROM mysql.user;
+#show databases;
+#mysql -h localhost -u inventory_service_user -p
+#create database inventory_service;
+
+# Or in Windows Powershell:
+#docker exec -it ContainerID sh
+#mysqlsh
+#\connect inventory_service_user@localhost:3306
+#\sql
+#use inventory_service
+#SHOW TABLES;
+#select * from t_inventory;
+#\q
+
+
+
+
